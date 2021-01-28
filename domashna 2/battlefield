@@ -91,7 +91,7 @@ public class battlefield extends JFrame implements MouseListener {
         this.figureCollection[0][1] = (new guard(0, 1, "yellow"));
         this.figureCollection[0][2] = (new guard(0, 2, "yellow"));
         this.figureCollection[0][3] = (new guard(0, 3, "yellow"));
-        thisfigureCollection[0][4] = (new leader(0, 4, "yellow"));
+        this.figureCollection[0][4] = (new leader(0, 4, "yellow"));
         this.figureCollection[4][0] = (new leader(4, 0, "green"));
         this.figureCollection[4][1] = (new guard(4, 1, "green"));
         this.figureCollection[4][2] = (new guard(4, 2, "green"));
