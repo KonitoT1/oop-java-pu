@@ -2,7 +2,7 @@ public class application {
 
     public static void main(String[] args) {
 
-        BattleField battlefield = BattleField();
+        BattleField battlefield = battlefield();
 
     }
 }
