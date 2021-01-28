@@ -1,0 +1,165 @@
+import figures.guard;
+import figures.leader;
+import figures.figure;
+import fields.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+
+public class battlefield extends JFrame implements MouseListener {
+
+    public static final int BATTLEFIELD_SIZE = 500;
+    public static final int BATTLEFIELD_SIDE_SIZE = 5;
+    private ArrayList<field> fieldsCollection;
+    public figure[][] figureCollection;
+    private figure selectedfigure;
+
+
+    public battlefield(){
+
+        this.setSize(BATTLEFIELD_SIZE, BATTLEFIELD_SIZE);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+        this.addMouseListener(this);
+
+        fieldsCollection = new ArrayList<>();
+        figureCollection = new figure[BATTLEFIELD_SIDE_SIZE][BATTLEFIELD_SIDE_SIZE];
+
+        this.setfigures();
+        this.setfields();
+
+    }
+
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+
+        for(field tile : fieldsCollection) {
+
+            field.renderfield(g);
+        }
+
+        for (int row = 0; row < BATTLEFIELD_SIDE_SIZE; row++) {
+            for (int col = 0; col < BATTLEFIELD_SIDE_SIZE; col++) {
+
+                if(this.hasbattlefieldfigure(row, col)) {
+                    figureCollection[row][col].renderfigure(g);
+                }
+            }
+        }
+    }
+
+
+    private void setfields() {
+
+        fieldsCollection.add(new redfield(0, 0));
+        fieldsCollection.add(new blackfield(0, 1));
+        fieldsCollection.add(new whitefield(0, 2));
+        fieldsCollection.add(new blackfield(0, 3));
+        fieldsCollection.add(new redfield(0, 4));
+        fieldsCollection.add(new greyfield(1, 0));
+        fieldsCollection.add(new greyfield(1, 1));
+        fieldsCollection.add(new whitefield(1, 2));
+        fieldsCollection.add(new greyfield(1, 3));
+        fieldsCollection.add(new greyfield(1, 4));
+        fieldsCollection.add(new whitefield(2, 0));
+        fieldsCollection.add(new whitefield(2, 1));
+        fieldsCollection.add(new whitefield(2, 2));
+        fieldsCollection.add(new whitefield(2, 3));
+        fieldsCollection.add(new whitefield(2, 4));
+        fieldsCollection.add(new greyfield(3, 0));
+        fieldsCollection.add(new greyfield(3, 1));
+        fieldsCollection.add(new whitefield(3, 2));
+        fieldsCollection.add(new greyfield(3, 3));
+        fieldsCollection.add(new greyfield(3, 4));
+        fieldsCollection.add(new blackfield(4, 0));
+        fieldsCollection.add(new redfield(4, 1));
+        fieldsCollection.add(new whitefield(4, 2));
+        fieldsCollection.add(new redfield(4, 3));
+        fieldsCollection.add(new blackfield(4, 4));
+    }
+
+   
+    private void setfigures() {
+
+        this.figureCollection[0][0] = (new guard(0, 0, "yellow"));
+        this.figureCollection[0][1] = (new guard(0, 1, "yellow"));
+        this.figureCollection[0][2] = (new guard(0, 2, "yellow"));
+        this.figureCollection[0][3] = (new guard(0, 3, "yellow"));
+        thisfigureCollection[0][4] = (new leader(0, 4, "yellow"));
+        this.figureCollection[4][0] = (new leader(4, 0, "green"));
+        this.figureCollection[4][1] = (new guard(4, 1, "green"));
+        this.figureCollection[4][2] = (new guard(4, 2, "green"));
+        this.figureCollection[4][3] = (new guard(4, 3, "green"));
+        this.figureCollection[4][4] = (new guard(4, 4, "green"));
+    }
+
+    
+    private boolean hasbattlefieldfigure(int row, int col) {
+
+        return this.figureCollection[row][col] != null;
+    }
+
+   
+    private figure getbattlefieldfigure(int row, int col) {
+
+        return this.figureCollection[row][col];
+    }
+
+    
+    public int getLocationBasedOffCoordinates(int coordinates) {
+
+        return coordinates / field.FIELD_SIZE;
+    }
+
+    
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+        int row = getLocationBasedOffCoordinates(e.getY());
+        int col = getLocationBasedOffCoordinates(e.getX());
+
+        boolean isMoveExecuted = false;
+
+      
+        if(this.selectedfigure != null) {
+
+            if(this.selectedfigure.isMoveValid(row, col, this.figureCollection)) {
+
+                this.selectedfigure.movefigure(row, col, this.figureCollection);
+                isMoveExecuted = true;
+            }
+            this.selectedfigure = null;
+            this.repaint();
+        }
+       
+        if(this.hasbattlefieldfigure(row, col) && !isMoveExecuted) {
+            this.selectedfigure = this.getbattlefieldfigure(row, col);
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+}
