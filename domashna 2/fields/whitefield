@@ -1,0 +1,14 @@
+package fields;
+
+import java.awt.*;
+
+public class whitefield extends field {
+
+
+    public whitefield(int row, int col) {
+
+        this.row = row;
+        this.col = col;
+        this.color = Color.decode("#ffffff");
+    }
+}
