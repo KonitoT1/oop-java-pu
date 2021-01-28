@@ -1,0 +1,236 @@
+import figures.guard;
+import figures.leader;
+import figures.figure;
+import figures.turtle;
+import fields.*;
+import end.modalwindow;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Random;
+
+public class battlefield extends JFrame implements MouseListener {
+
+    public static final int BATTLEFIELD_SIZE = 500;
+    public static final int BATTLEFIELD_SIDE_SIZE = 5;
+    private ArrayList<field> fieldsCollection;
+    public figure[][] figureCollection;
+    private figure selectedfigure;
+    private String winner;
+
+
+    public battlefield(){
+
+        this.setSize(BATTLEFIELD_SIZE, BATTLEFIELD_SIZE);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
+        this.setfield("Frog Wars 2");
+        this.setVisible(true);
+        this.addMouseListener(this);
+
+        fieldsCollection = new ArrayList<>();
+        figureCollection = new figure[BATTLEFIELD_SIDE_SIZE][BATTLEFIELD_SIDE_SIZE];
+
+        this.setfigures();
+        this.setfields();
+
+    }
+
+
+    public void paint(Graphics g) {
+        super.paint(g);
+
+        for(field tile : fieldsCollection) {
+
+            field.renderfield(g);
+        }
+
+        for (int row = 0; row < BATTLEFIELD_SIDE_SIZE; row++) {
+            for (int col = 0; col < BATTLEFIELD_SIDE_SIZE; col++) {
+
+                if(this.hasbattlefieldfigure(row, col)) {
+                    figureCollection[row][col].renderfigure(g);
+                }
+            }
+        }
+    }
+
+   
+    private void setfields() {
+
+        fieldsCollection.add(new refield(0, 0));
+        fieldsCollection.add(new blackfield(0, 1));
+        fieldsCollection.add(new whitefield(0, 2));
+        fieldsCollection.add(new blackfield(0, 3));
+        fieldsCollection.add(new redfield(0, 4));
+        fieldsCollection.add(new greyfield(1, 0));
+        fieldsCollection.add(new greyfield(1, 1));
+        fieldsCollection.add(new whitefield(1, 2));
+        fieldsCollection.add(new greyfield(1, 3));
+        fieldsCollection.add(new greyfield(1, 4));
+        fieldsCollection.add(new whitefield(2, 0));
+        fieldsCollection.add(new whitefield(2, 1));
+        fieldsCollection.add(new whitefield(2, 2));
+        fieldsCollection.add(new whitefield(2, 3));
+        fieldsCollection.add(new whitefield(2, 4));
+        fieldsCollection.add(new greyfield(3, 0));
+        fieldsCollection.add(new greyfield(3, 1));
+        fieldsCollection.add(new whitefield(3, 2));
+        fieldsCollection.add(new greyfield(3, 3));
+        fieldsCollection.add(new greyfield(3, 4));
+        fieldsCollection.add(new blackfield(4, 0));
+        tilesCollection.add(new RedTile(4, 1));
+        tilesCollection.add(new WhiteTile(4, 2));
+        tilesCollection.add(new RedTile(4, 3));
+        tilesCollection.add(new BlackTile(4, 4));
+    }
+
+   
+    private void setfigures() {
+
+        this.figureCollection[0][0] = (new guard(0, 0, "yellow"));
+        this.figureCollection[0][1] = (new guard(0, 1, "yellow"));
+        this.figureCollection[0][2] = (new guard(0, 2, "yellow"));
+        this.figureCollection[0][3] = (new guard(0, 3, "yellow"));
+        this.figureCollection[0][4] = (new leader(0, 4, "yellow"));
+        this.figureCollection[4][0] = (new leader(4, 0, "green"));
+        this.figureCollection[4][1] = (new guard(4, 1, "green"));
+        this.figureCollection[4][2] = (new guard(4, 2, "green"));
+        this.figureCollection[4][3] = (new guard(4, 3, "green"));
+        this.figureCollection[4][4] = (new guard(4, 4, "green"));
+        this.spawnturtles(2);
+    }
+
+ 
+    public void spawnturtles(int turtlePos) {
+
+        Random random = new Random();
+        while(turtlePos == 2) {
+
+            turtlePos = random.nextInt(5);
+        }
+        this.figureCollection[2][turtlePos] = new turtle(2, turtlePos);
+
+        int old = turtlePos;
+        while(turtlePos == old || turtlePos == 2) {
+
+            turtlePos = random.nextInt(5);
+        }
+        this.figureCollection[2][turtlePos] = new turtle(2, turtlePos);
+    }
+
+   
+    private boolean hasbattlefieldfigure(int row, int col) {
+
+        return this.figureCollection[row][col] != null;
+    }
+
+    
+    private figure getbattlefieldfigure(int row, int col) {
+
+        return this.figureCollection[row][col];
+    }
+
+    
+    public int getLocationBasedOffCoordinates(int coordinates) {
+
+        return coordinates / field.FIELD_SIZE;
+    }
+
+
+    public void mouseClicked(MouseEvent e) {
+
+        int row = getLocationBasedOffCoordinates(e.getY());
+        int col = getLocationBasedOffCoordinates(e.getX());
+
+        boolean isMoveExecuted = false;
+
+        
+        if(this.selectedfigure != null) {
+
+            if(this.selectedfigure.isMoveValid(row, col, this.figureCollection)) {
+
+                this.selectedfigure.movefigure(row, col, this.figureCollection);
+                isMoveExecuted = true;
+            }
+
+
+
+            this.repaint();
+            if(!this.isEND() || this.isleaderOnCenterfield()) {
+
+                new modalwindow(this, "End". );
+                System.exit(1);
+            }
+            this.selectedfigure = null;
+        }
+       
+        if(this.hasbattlefieldfigure(row, col) && !isMoveExecuted) {
+            if(!this.getbattlefieldfigure(row, col).type.equals("turtle")) {
+
+                this.selectedfigure = this.getbattlefieldfigure(row, col);
+            }
+        }
+    }
+
+    
+    public boolean isEND() {
+
+        boolean hasGreenleader = false;
+        boolean hasYellowleader = false;
+
+        for (figure[] figures : this.figureCollection) {
+            for (figure figure : figures) {
+
+                if(figure != null) {
+                    if (figure.type.equals("leader")) {
+                        if (figure.color.equals("green")) {
+                            hasGreenleader = true;
+                        } else {
+                            hasYellowleader = true;
+                        }
+                    }
+                }
+            }
+        }
+        if(!hasGreenleader) this.winner = "Yellow";
+        if(!hasYellowleader) this.winner = "Green";
+
+        return hasGreenleader && hasYellowleader;
+    }
+
+    public boolean isleaderOnCenterfield() {
+
+        if(this.selectedfigure.type.equals("leader")
+                && (this.selectedfigure.row == 2 && this.selectedfigure.col == 2)) {
+            if(this.selectedfigure.color.equals("green")) {
+                this.winner = "Yellow";
+
+            } else {
+                this.winner = "Green";
+            }
+            return true;
+
+        }
+        return false;
+    }
+   
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    public void mouseExited(MouseEvent e) {
+
+    }
+}
