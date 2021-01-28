@@ -1,0 +1,16 @@
+package figures;
+
+import java.awt.*;
+
+public class Guard extends figure {
+
+    public Guard(int row, int col, String color) {
+
+        this.row = row;
+        this.col = col;
+        this.color = color;
+        this.type = "guard";
+    }
+
+
+}
