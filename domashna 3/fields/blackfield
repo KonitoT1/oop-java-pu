@@ -1,0 +1,13 @@
+package fields;
+
+import java.awt.*;
+
+public class blackfield extends field {
+
+
+    public blackfield(int row, int col) {
+
+        this.row = row;
+        this.col = col;
+        this.color = Color.decode("#444444");
+    }}
