@@ -1,0 +1,14 @@
+package fields;
+
+import java.awt.*;
+
+public class greyfield extends field {
+
+
+    public greyfield(int row, int col) {
+
+        this.row = row;
+        this.col = col;
+        this.color = Color.decode("#aaaaaa");
+    }
+}
