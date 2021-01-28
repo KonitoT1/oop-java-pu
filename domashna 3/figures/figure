@@ -1,0 +1,200 @@
+package figures;
+
+import fields.field;
+
+import java.awt.*;
+
+public abstract class figure {
+
+    private final static int FIGURE_OFFSET = 23;
+
+    public String color;
+    public int row;
+    public int col;
+    public String type;
+
+
+    public void renderfigure(Graphics g) {
+
+        int x = this.col * field.FIELD_SIZE + FIGURE_OFFSET;
+        int y = this.row * field.FIELD_SIZE + FIGURE_OFFSET;
+
+        switch (type) {
+
+            case "guard": {
+
+                if(this.color.equals("green")) {
+
+                    g.setColor(Color.decode("#fff200"));
+                    g.fillOval(x, y, 50, 50);
+                    g.setColor(Color.decode("#22b14c"));
+                } else {
+
+                    g.setColor(Color.decode("#22b14c"));
+                    g.fillOval(x, y, 50, 50);
+                    g.setColor(Color.decode("#fff200"));
+                }
+                g.fillOval(x + 5, y + 5, 40, 40);
+                break;
+            } case "leader": {
+
+                if(this.color.equals("green")) {
+
+                    g.setColor(Color.decode("#22b14c"));
+
+                } else {
+
+                    g.setColor(Color.decode("#fff200"));
+                }
+                g.fillRect(x, y, 50, 50);
+                break;
+            }
+
+            case "turtle": {
+
+                g.setColor(Color.red);
+                g.fillOval(x, y, 50, 50);
+                g.setColor(Color.blue);
+                g.fillOval(x + 5, y + 5, 40, 40);
+                break;
+
+            }
+        }
+    }
+
+   
+    public void movefigure(int newRow, int newCol, figure[][] figureCollection) {
+
+        int oldRow = this.row;
+        int oldCol = this.col;
+        boolean hasMetTurtle = false;
+
+
+
+        if (this.type.equals("guard")) {
+
+            if(figureCollection[newRow][newCol] != null && figureCollection[newRow][newCol].type.equals("turtle")) {
+
+                figureCollection[newRow][newCol] = null;
+            } else {
+                figureCollection[newRow][newCol] = this;
+                this.row = newRow;
+                this.col = newCol;
+            }
+            figureCollection[oldRow][oldCol] = null;
+
+        } else {
+
+            if (oldRow != newRow) {
+
+                if (oldRow > newRow) {
+
+                    for (int i = 0; i <= 4; i++) {
+
+                        try {
+                            if (figureCollection[this.row - 1][this.col] == null) {
+                                this.row--;
+                            } else if(figureCollection[this.row - 1][this.col].type.equals("turtle")) {
+                                figureCollection[this.row][this.col] = null;
+                                figureCollection[this.row - 1][this.col] = null;
+                                figureCollection[oldRow][oldCol] = null;
+
+                                hasMetTurtle = true;
+                                break;
+
+                            }
+
+                        } catch (Exception ignored) {
+
+                        }
+                    }
+                }
+                if (oldRow < newRow) {
+
+                    for (int i = 0; i <= 4; i++) {
+
+                        try {
+                            if (figureCollection[this.row + 1][this.col] == null) {
+                                this.row++;
+                            } else if(figureCollection[this.row + 1][this.col].type.equals("turtle")) {
+                                figureCollection[this.row][this.col] = null;
+                                figureCollection[this.row + 1][this.col] = null;
+                                figureCollection[oldRow][oldCol] = null;
+
+                                hasMetTurtle = true;
+                                break;
+                            }
+                        } catch (Exception ignored) {
+
+                        }
+                    }
+                }
+            }
+
+            if(oldCol != newCol) {
+
+                if (oldCol > newCol) {
+
+                    for (int i = 0; i <= 4; i++) {
+
+                        try {
+                            if (figureCollection[this.row][this.col - 1] == null) {
+                                this.col--;
+                            } else if(figureCollection[this.row][this.col - 1].type.equals("turtle")) {
+                                figureCollection[this.row][this.col] = null;
+                                figureCollection[this.row][this.col - 1] = null;
+                                figureCollection[oldRow][oldCol] = null;
+
+                                hasMetTurtle = true;
+                                break;
+                            }
+                        } catch (Exception ignored) {
+
+                        }
+                    }
+                }
+                if (oldCol < newCol) {
+
+                    for (int i = 0; i <= 4; i++) {
+
+                        try {
+                            if (figureCollection[this.row][this.col + 1] == null) {
+                                this.col++;
+                            } else if(figureCollection[this.row][this.col + 1].type.equals("turtle")) {
+                                figureCollection[this.row][this.col] = null;
+                                figureCollection[this.row][this.col + 1] = null;
+                                figureCollection[oldRow][oldCol] = null;
+
+                                hasMetTurtle = true;
+                                break;
+                            }
+                        } catch (Exception ignored) {
+
+                        }
+                    }
+                }
+            }
+            if(!hasMetTurtle) {
+                figureCollection[this.row][this.col] = this;
+                figureCollection[oldRow][oldCol] = null;
+            }
+        }
+
+    }
+
+
+    public boolean isMoveValid(int row, int col, figure[][] figureCollection) {
+
+        if(this.type.equals("guard")) {
+
+            return (this.row == row + 1 || this.row == row - 1 || this.row == row)
+                    && (this.col == col + 1 || this.col == col - 1 || this.col == col)
+                    && (figureCollection[row][col] == null
+                    || (figureCollection[row][col] != null
+                    && figureCollection[row][col].type.equals("turtle")));
+        } else {
+
+            return figureCollection[row][col] == null;
+        }
+    }
+}
