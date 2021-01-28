@@ -1,0 +1,24 @@
+package fields;
+
+import java.awt.*;
+
+public abstract class field {
+
+    public static final int FIELD_SIZE = 100;
+
+    int row;
+    int col;
+    Color color;
+
+    /***
+     * Renders a field to the screen
+     */
+    public void renderfield(Graphics g) {
+
+        int fieldX = this.col * FIELD_SIZE;
+        int fieldY = this.row * FIELD_SIZE;
+
+        g.setColor(this.color);
+        g.fillRect(fieldX, fieldY, FIELD_SIZE, FIELD_SIZE);
+    }
+}
